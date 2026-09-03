@@ -39,6 +39,12 @@ export function CitizenPage({ user }) {
     setMessage(limitFeedbackMessage(event.target.value));
   }
 
+  function handleSubmitAnother() {
+    setSubmitted(false);
+    setError("");
+    setMessage("");
+  }
+
   return (
     <main className="page-shell">
       <div className="page-heading">
@@ -47,31 +53,38 @@ export function CitizenPage({ user }) {
         <p>Tell us about an issue, an idea, or a positive experience in your community.</p>
       </div>
       <section className="form-card">
-        {submitted && (
-          <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
-            Thank you. Your feedback has been received.
+        {submitted ? (
+          <div className="confirmation-panel">
+            <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
+              Thank you. Your feedback has been received.
+            </div>
+            <p className="muted">You can send another note from this same signed-in session.</p>
+            <button className="primary-button" type="button" onClick={handleSubmitAnother}>
+              Submit another response
+            </button>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="feedback-message">Your feedback</label>
+            <textarea
+              id="feedback-message"
+              ref={textareaRef}
+              rows="7"
+              value={message}
+              maxLength={FEEDBACK_CHARACTER_LIMIT}
+              onChange={handleMessageChange}
+              placeholder="Share your feedback here..."
+              aria-describedby={feedbackDescription}
+              aria-invalid={error ? "true" : "false"}
+            />
+            <p className="muted form-help" id="feedback-help">Please do not include sensitive personal information.</p>
+            <div className="character-count" id="feedback-count" aria-live="polite">{characterCount}/{FEEDBACK_CHARACTER_LIMIT} characters</div>
+            <div className="form-footer">
+              <button className="primary-button" type="submit">Submit feedback</button>
+            </div>
+            {error && <p className="error-message" id="feedback-error" role="alert">{error}</p>}
+          </form>
         )}
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="feedback-message">Your feedback</label>
-          <textarea
-            id="feedback-message"
-            ref={textareaRef}
-            rows="7"
-            value={message}
-            maxLength={FEEDBACK_CHARACTER_LIMIT}
-            onChange={handleMessageChange}
-            placeholder="Share your feedback here..."
-            aria-describedby={feedbackDescription}
-            aria-invalid={error ? "true" : "false"}
-          />
-          <p className="muted form-help" id="feedback-help">Please do not include sensitive personal information.</p>
-          <div className="character-count" id="feedback-count" aria-live="polite">{characterCount}/{FEEDBACK_CHARACTER_LIMIT} characters</div>
-          <div className="form-footer">
-            <button className="primary-button" type="submit">Submit feedback</button>
-          </div>
-          {error && <p className="error-message" id="feedback-error" role="alert">{error}</p>}
-        </form>
       </section>
     </main>
   );
