@@ -54,6 +54,10 @@ textarea { resize: vertical; line-height: 1.6; }
 .form-help { margin: 9px 0 0; font-size: 13px; }
 .success-banner { background: #e8f4ec; color: #26703b; border-radius: 8px; padding: 13px 15px; margin-bottom: 20px; font-size: 14px; }
 .admin-shell { max-width: 1050px; }
+.inbox-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.summary-card { background: white; border: 1px solid #e2dfd7; border-radius: 8px; padding: 18px; box-shadow: 0 8px 30px rgba(28,36,42,.04); }
+.summary-card span { display: block; color: #69747b; font-size: 13px; font-weight: 700; line-height: 1.2; }
+.summary-card strong { display: block; margin-top: 10px; color: #17222b; font-family: Fraunces, Georgia, serif; font-size: 34px; line-height: 1; }
 .list-header { display: flex; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid #eceae4; }
 .list-header span { color: #69747b; font-size: 14px; }
 .search-field { margin: 20px 0 4px; }
@@ -74,4 +78,6 @@ textarea { resize: vertical; line-height: 1.6; }
   .form-footer { align-items: stretch; flex-direction: column; }
   .form-footer .primary-button { width: 100%; }
   .confirmation-panel .primary-button { justify-self: stretch; }
+  .inbox-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .summary-card { padding: 16px; }
 }
