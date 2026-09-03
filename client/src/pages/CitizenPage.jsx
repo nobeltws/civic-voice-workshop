@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { submitFeedback } from "../api";
 import { FEEDBACK_CHARACTER_LIMIT, limitFeedbackMessage } from "../feedbackLimit";
 
+export function hasUsefulFeedback(message) {
+  return message.trim().length > 0;
+}
+
 export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -9,6 +13,7 @@ export function CitizenPage({ user }) {
   const successRef = useRef(null);
   const textareaRef = useRef(null);
   const characterCount = message.length;
+  const canSubmit = hasUsefulFeedback(message);
   const feedbackDescription = [
     "feedback-help",
     "feedback-count",
@@ -26,6 +31,10 @@ export function CitizenPage({ user }) {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    if (!canSubmit) {
+      setError("Please enter feedback.");
+      return;
+    }
     try {
       await submitFeedback({ nric: user.nric, name: user.name, message });
       setSubmitted(true);
@@ -80,7 +89,7 @@ export function CitizenPage({ user }) {
             <p className="muted form-help" id="feedback-help">Please do not include sensitive personal information.</p>
             <div className="character-count" id="feedback-count" aria-live="polite">{characterCount}/{FEEDBACK_CHARACTER_LIMIT} characters</div>
             <div className="form-footer">
-              <button className="primary-button" type="submit">Submit feedback</button>
+              <button className="primary-button" type="submit" disabled={!canSubmit}>Submit feedback</button>
             </div>
             {error && <p className="error-message" id="feedback-error" role="alert">{error}</p>}
           </form>
