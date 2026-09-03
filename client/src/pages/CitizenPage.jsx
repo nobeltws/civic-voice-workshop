@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { submitFeedback } from "../api";
 import { FEEDBACK_CHARACTER_LIMIT, limitFeedbackMessage } from "../feedbackLimit";
 
@@ -6,7 +6,22 @@ export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const successRef = useRef(null);
+  const textareaRef = useRef(null);
   const characterCount = message.length;
+  const feedbackDescription = [
+    "feedback-help",
+    "feedback-count",
+    error ? "feedback-error" : "",
+  ].filter(Boolean).join(" ");
+
+  useEffect(() => {
+    if (submitted) successRef.current?.focus();
+  }, [submitted]);
+
+  useEffect(() => {
+    if (error) textareaRef.current?.focus();
+  }, [error]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -18,6 +33,10 @@ export function CitizenPage({ user }) {
     } catch (requestError) {
       setError(requestError.message);
     }
+  }
+
+  function handleMessageChange(event) {
+    setMessage(limitFeedbackMessage(event.target.value));
   }
 
   function handleSubmitAnother() {
@@ -36,7 +55,9 @@ export function CitizenPage({ user }) {
       <section className="form-card">
         {submitted ? (
           <div className="confirmation-panel">
-            <div className="success-banner">Thank you. Your feedback has been received.</div>
+            <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
+              Thank you. Your feedback has been received.
+            </div>
             <p className="muted">You can send another note from this same signed-in session.</p>
             <button className="primary-button" type="button" onClick={handleSubmitAnother}>
               Submit another response
@@ -44,21 +65,24 @@ export function CitizenPage({ user }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <label>Your feedback
-              <textarea
-                rows="7"
-                value={message}
-                maxLength={FEEDBACK_CHARACTER_LIMIT}
-                onChange={(event) => setMessage(limitFeedbackMessage(event.target.value))}
-                placeholder="Share your feedback here..."
-              />
-            </label>
-            <div className="character-count">{characterCount}/{FEEDBACK_CHARACTER_LIMIT} characters</div>
+            <label htmlFor="feedback-message">Your feedback</label>
+            <textarea
+              id="feedback-message"
+              ref={textareaRef}
+              rows="7"
+              value={message}
+              maxLength={FEEDBACK_CHARACTER_LIMIT}
+              onChange={handleMessageChange}
+              placeholder="Share your feedback here..."
+              aria-describedby={feedbackDescription}
+              aria-invalid={error ? "true" : "false"}
+            />
+            <p className="muted form-help" id="feedback-help">Please do not include sensitive personal information.</p>
+            <div className="character-count" id="feedback-count" aria-live="polite">{characterCount}/{FEEDBACK_CHARACTER_LIMIT} characters</div>
             <div className="form-footer">
-              <span className="muted">Please do not include sensitive personal information.</span>
-              <button className="primary-button">Submit feedback</button>
+              <button className="primary-button" type="submit">Submit feedback</button>
             </div>
-            {error && <p className="error-message">{error}</p>}
+            {error && <p className="error-message" id="feedback-error" role="alert">{error}</p>}
           </form>
         )}
       </section>
