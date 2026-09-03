@@ -58,13 +58,13 @@ export function LoginPage({ onLogin }) {
               <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" />
             </label>
             {error && <p className="error-message">{error}</p>}
+            <details className="demo-help">
+              <summary>Workshop demo accounts</summary>
+              <p>Public: S0000001A / citizen123</p>
+              <p>Admin: S0000002B / admin123</p>
+            </details>
             <button className="primary-button" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
           </form>
-          <details className="demo-help">
-            <summary>Workshop demo accounts</summary>
-            <p>Public: S0000001A / citizen123</p>
-            <p>Admin: S0000002B / admin123</p>
-          </details>
         </div>
       </section>
     </main>
