@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../api";
+import { getLoginCredentials } from "../loginCredentials";
 
 export function LoginPage({ onLogin }) {
   const [role, setRole] = useState("citizen");
@@ -10,10 +11,17 @@ export function LoginPage({ onLogin }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setBusy(true);
     setError("");
+    const { error: validationError, credentials } = getLoginCredentials({ nric, password, role });
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setBusy(true);
     try {
-      const session = await login({ nric, password, role });
+      const session = await login(credentials);
       onLogin(session);
     } catch (requestError) {
       setError(requestError.message);
