@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { filterFeedbackByKeyword } from "../adminSearch";
 import { getFeedback } from "../api";
 import { getInboxSummaryCounts } from "../inboxSummary";
+import { sortFeedbackNewestFirst } from "../../../shared/feedbackOrder";
 
 export function AdminPage({ user }) {
   const [feedback, setFeedback] = useState([]);
@@ -14,7 +15,8 @@ export function AdminPage({ user }) {
     { label: "In review", value: summaryCounts.inReview },
     { label: "Closed", value: summaryCounts.closed },
   ];
-  const filteredFeedback = useMemo(() => filterFeedbackByKeyword(feedback, keyword), [feedback, keyword]);
+  const orderedFeedback = useMemo(() => sortFeedbackNewestFirst(feedback), [feedback]);
+  const filteredFeedback = useMemo(() => filterFeedbackByKeyword(orderedFeedback, keyword), [orderedFeedback, keyword]);
   const hasKeyword = keyword.trim().length > 0;
 
   useEffect(() => {

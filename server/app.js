@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import express from "express";
 import cors from "cors";
 import { createDb } from "./lib/db.js";
+import { sortFeedbackNewestFirst } from "../shared/feedbackOrder.js";
 
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
@@ -29,7 +30,7 @@ export async function createApp(options = {}) {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
     }
-    return res.json({ feedback: db.data.feedback });
+    return res.json({ feedback: sortFeedbackNewestFirst(db.data.feedback) });
   });
 
   app.post("/api/feedback", async (req, res) => {
