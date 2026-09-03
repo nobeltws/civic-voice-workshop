@@ -53,6 +53,8 @@ textarea { resize: vertical; line-height: 1.6; }
 .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 20px; font-size: 13px; }
 .form-help { margin: 9px 0 0; font-size: 13px; }
 .success-banner { background: #e8f4ec; color: #26703b; border-radius: 8px; padding: 13px 15px; margin-bottom: 20px; font-size: 14px; }
+.success-banner span { display: block; }
+.submission-reference { margin-top: 6px; }
 .admin-shell { max-width: 1050px; }
 .inbox-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
 .summary-card { background: white; border: 1px solid #e2dfd7; border-radius: 8px; padding: 18px; box-shadow: 0 8px 30px rgba(28,36,42,.04); }
