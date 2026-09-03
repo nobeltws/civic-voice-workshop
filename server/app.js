@@ -3,8 +3,20 @@ import express from "express";
 import cors from "cors";
 import { createDb } from "./lib/db.js";
 
+export function createSubmissionReference(existingFeedback = []) {
+  const existingReferences = new Set(existingFeedback.map((feedback) => feedback.reference).filter(Boolean));
+  let reference;
+
+  do {
+    reference = `CV-${String(crypto.randomInt(0, 1000000)).padStart(6, "0")}`;
+  } while (existingReferences.has(reference));
+
+  return reference;
+}
+
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
+  const makeSubmissionReference = options.createSubmissionReference ?? createSubmissionReference;
   const app = express();
   app.use(cors());
   app.use(express.json());
@@ -36,7 +48,9 @@ export async function createApp(options = {}) {
     const { nric, name, message } = req.body ?? {};
     if (!message) return res.status(400).json({ error: "Please enter feedback." });
     const feedback = {
-      id: crypto.randomUUID(), nric, name, message, category: "General", status: "New",
+      id: crypto.randomUUID(),
+      reference: makeSubmissionReference(db.data.feedback),
+      nric, name, message, category: "General", status: "New",
       createdAt: new Date().toISOString(),
     };
     db.data.feedback.unshift(feedback);

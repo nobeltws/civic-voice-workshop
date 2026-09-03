@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { createApp } from "./app.js";
+import { createApp, createSubmissionReference } from "./app.js";
 import { createDb } from "./lib/db.js";
 
 async function testApp() {
@@ -35,6 +35,21 @@ describe("CivicVoice baseline API", () => {
     });
     expect(response.status).toBe(201);
     expect(response.body.feedback.message).toBe("Please add more benches.");
+  });
+
+  it("returns a short submission reference for accepted feedback", async () => {
+    const app = await testApp();
+    const response = await request(app).post("/api/feedback").send({
+      nric: "S0000001A", name: "Aisha Rahman", message: "Please add more benches.",
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.feedback.reference).toMatch(/^CV-\d{6}$/);
+    expect(response.body.feedback.reference).not.toBe(response.body.feedback.id);
+  });
+
+  it("creates references in the public CV-123456 format", () => {
+    expect(createSubmissionReference()).toMatch(/^CV-\d{6}$/);
   });
 
   it("blocks the feedback list without the admin role header", async () => {

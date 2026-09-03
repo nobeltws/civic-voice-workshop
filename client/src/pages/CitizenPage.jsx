@@ -2,9 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import { submitFeedback } from "../api";
 import { FEEDBACK_CHARACTER_LIMIT, limitFeedbackMessage } from "../feedbackLimit";
 
+export function SubmissionSuccessBanner({ reference, successRef }) {
+  return (
+    <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
+      <span>Thank you. Your feedback has been received.</span>
+      {reference && (
+        <span className="submission-reference">
+          Reference: <strong>{reference}</strong>
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submissionReference, setSubmissionReference] = useState("");
   const [error, setError] = useState("");
   const successRef = useRef(null);
   const textareaRef = useRef(null);
@@ -27,7 +41,8 @@ export function CitizenPage({ user }) {
     event.preventDefault();
     setError("");
     try {
-      await submitFeedback({ nric: user.nric, name: user.name, message });
+      const response = await submitFeedback({ nric: user.nric, name: user.name, message });
+      setSubmissionReference(response.feedback.reference ?? "");
       setSubmitted(true);
       setMessage("");
     } catch (requestError) {
@@ -41,6 +56,7 @@ export function CitizenPage({ user }) {
 
   function handleSubmitAnother() {
     setSubmitted(false);
+    setSubmissionReference("");
     setError("");
     setMessage("");
   }
@@ -55,9 +71,7 @@ export function CitizenPage({ user }) {
       <section className="form-card">
         {submitted ? (
           <div className="confirmation-panel">
-            <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
-              Thank you. Your feedback has been received.
-            </div>
+            <SubmissionSuccessBanner reference={submissionReference} successRef={successRef} />
             <p className="muted">You can send another note from this same signed-in session.</p>
             <button className="primary-button" type="button" onClick={handleSubmitAnother}>
               Submit another response
